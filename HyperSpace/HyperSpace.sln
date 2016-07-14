@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{9F1A4D7B-9B0B-DFF8-66C4-B26C60B7B004}") = "HyperSpace", "Assembly-CSharp.csproj", "{CF401D6C-7A5A-0F14-4BC3-0C897A4B23FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF401D6C-7A5A-0F14-4BC3-0C897A4B23FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF401D6C-7A5A-0F14-4BC3-0C897A4B23FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF401D6C-7A5A-0F14-4BC3-0C897A4B23FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF401D6C-7A5A-0F14-4BC3-0C897A4B23FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
