@@ -4,6 +4,7 @@ using System.Collections;
 public class GameController : MonoBehaviour {
 
     public GameObject wall;
+    public GameObject player;
     public Vector3 spawnValues;
     public float startWait;
     public float speed;
@@ -12,24 +13,26 @@ public class GameController : MonoBehaviour {
 
     void Start()
     {
+        Profiler.maxNumberOfSamplesPerFrame = 3;
+        Vector3 spawnPosition = new Vector3(0, 1, -17);
+        Quaternion spawnRotation = Quaternion.identity;
+        Instantiate(player, spawnPosition, spawnRotation);
         BelowWallController.speed = speed;
+        BelowWallController.maxSpeed = maxSpeed;
         StartCoroutine(SpawnWaves());
     }
 
     IEnumerator SpawnWaves()
     {
         yield return new WaitForSeconds(startWait);
-        while (true)
+        for (int i = 0; i < 3; ++i )
         {
+            yield return new WaitForSeconds(13F / speed);
             Vector3 spawnPosition = new Vector3(spawnValues.x, spawnValues.y, spawnValues.z);
             Quaternion spawnRotation = Quaternion.identity;
             Instantiate(wall, spawnPosition, spawnRotation);
-            yield return new WaitForSeconds(range / speed);
-            if(speed < maxSpeed)
-            {
-                speed += 0.5F;
-                BelowWallController.speed = speed;
-            }
         }
     }
+
+
 }
