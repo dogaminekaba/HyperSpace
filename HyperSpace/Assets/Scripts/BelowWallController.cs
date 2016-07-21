@@ -3,27 +3,22 @@ using System.Collections;
 
 public class BelowWallController : MonoBehaviour {
 
+    //public GameObject grid;
     static public float speed;
     static public float maxSpeed;
-    Transform t;
+    private Transform t;
 
 	// Use this for initialization
     void Start()
     {
         t = GetComponent<Transform>();
-        // move backwards
     }
 
     void Update()
     {
+        //grid.GetComponent<Transform>().Translate(0, 0, -speed * Time.deltaTime);
         t.Translate(0, 0, -speed * Time.deltaTime);
         if (t.position.z < -20)
-        {
-            t.position = new Vector3(0, 1, 20);
-            if (speed < maxSpeed)
-            {
-                speed += 0.5F;
-            }
-        }
+            t.position = new Vector3(0, 0.75F, 20);
     }
 }

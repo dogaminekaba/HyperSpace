@@ -45,9 +45,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\LeanTouch\Examples\SimpleDrag.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleInfo.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleMove.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleOrthographicZoom.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleRotateScale.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleRotateScaleRelative.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleSnapshots.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleSplitScreen.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleSwipe.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleSwipeDirection.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleTap.cs" />
+     <Compile Include="Assets\LeanTouch\Examples\SimpleZoom.cs" />
+     <Compile Include="Assets\LeanTouch\Scripts\LeanFinger.cs" />
+     <Compile Include="Assets\LeanTouch\Scripts\LeanTouch.cs" />
      <Compile Include="Assets\Scripts\BelowWallController.cs" />
-     <Compile Include="Assets\Scripts\DestroyByBoundary.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
+     <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
