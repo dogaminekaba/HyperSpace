@@ -137,6 +137,8 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
+        if (player.gameObject == null)
+            return;
         switch(currentState)
         {
             case State.STATE_JUMPING:
@@ -231,5 +233,9 @@ public class GameController : MonoBehaviour {
             currentState = State.STATE_STANDING;
             jumpVelocity = 15;
         }
+    }
+    public static void gameOver()
+    {
+        HorizontalWallController.speed = 0;
     }
 }
