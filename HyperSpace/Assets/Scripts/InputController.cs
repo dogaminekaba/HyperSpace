@@ -35,6 +35,7 @@ public class InputController : MonoBehaviour {
         if (swipe.y < -Mathf.Abs(swipe.x))
         {
             Debug.Log("down swipe");
+            gc.movePlayer(GameController.State.STATE_DUCKING);
         }
 
         if (swipe.y > Mathf.Abs(swipe.x))
