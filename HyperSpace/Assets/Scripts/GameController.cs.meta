@@ -1,11 +1,12 @@
 fileFormatVersion: 2
 guid: f47def76caaea9f4dae27b39e4682b52
-timeCreated: 1469195197
+timeCreated: 1469457121
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - wall: {fileID: 116666, guid: 7c5a00a71b9591d41a030bc5f4e5c511, type: 2}
+  - horizontalWall: {fileID: 116666, guid: 7c5a00a71b9591d41a030bc5f4e5c511, type: 2}
+  - verticalWall: {fileID: 161858, guid: a2ae8b7d097529e40ad6c782ec1c51f7, type: 2}
   - playerPrefab: {fileID: 138638, guid: 6ab91d15c48ab4448b127b72aac3374b, type: 2}
   - player: {fileID: 138638, guid: 6ab91d15c48ab4448b127b72aac3374b, type: 2}
   executionOrder: 0

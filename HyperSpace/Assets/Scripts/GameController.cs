@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -30,8 +31,10 @@ public class GameController : MonoBehaviour {
         VIEW_BOTTOM
     };
 
-    public GameObject wall;
+    public GameObject horizontalWall;
+    public GameObject verticalWall;
     public GameObject playerPrefab;
+    public GameObject gridPrefab;
     public GameObject player;
     public float startWait;
     public float speed;
@@ -50,17 +53,21 @@ public class GameController : MonoBehaviour {
     private Vector3 currentRef;
     private float mouseDownY;
     private float mouseUpY;
+    private int count;
+    private int verticalPosition;
 
     void Start()
     {
         Profiler.maxNumberOfSamplesPerFrame = 3;
         // player initial position
         Vector3 spawnPosition = new Vector3(0, 1, -17);
-        // wall spawn
+        // wall rotation
         Quaternion spawnRotation = Quaternion.identity;
+        // generate player object
         player = (GameObject)Instantiate(playerPrefab, spawnPosition, spawnRotation);
-        HorizontalWallController.speed = speed;
-        HorizontalWallController.maxSpeed = maxSpeed;
+        WallController.speed = speed;
+        GridController.speed = speed;
+        WallController.maxSpeed = maxSpeed;
         currentRef = refTopCenter;
         StartCoroutine(SpawnWalls());
     }
@@ -68,16 +75,76 @@ public class GameController : MonoBehaviour {
     IEnumerator SpawnWalls()
     {
         yield return new WaitForSeconds(startWait);
+        Vector3 spawnPosition = new Vector3(0, 0, 0);
+        Quaternion spawnRotation = Quaternion.identity;
+        Instantiate(gridPrefab, spawnPosition, spawnRotation);
+        spawnPosition = new Vector3(50, 0, 0);
+        Instantiate(gridPrefab, spawnPosition, spawnRotation);
+        spawnPosition = new Vector3(100, 0, 0);
+        Instantiate(gridPrefab, spawnPosition, spawnRotation);
+
         for (int i = 0; i < 3; ++i )
         {
             // create wall for view 1
             yield return new WaitForSeconds(13F / speed);
-            Vector3 spawnPosition = new Vector3(0, 0.75F, 20);
-            Quaternion spawnRotation = Quaternion.identity;
-            Instantiate(wall, spawnPosition, spawnRotation);
+            spawnPosition = new Vector3(0, 0.75F, 20);
+            Instantiate(horizontalWall, spawnPosition, spawnRotation);
+
+            // create wall for view 2
+            count = 2;
+            // there are 3 different positions for vertical walls
+            verticalPosition = Random.Range(1, 3);
+            if(count == 1)
+            {
+                switch (verticalPosition)
+                {
+                    case 1:
+                        spawnPosition = new Vector3(47.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    case 2:
+                        spawnPosition = new Vector3(50, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    case 3:
+                        spawnPosition = new Vector3(52.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+            else
+            {
+                switch (verticalPosition)
+                {
+                    case 1:
+                        spawnPosition = new Vector3(47.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        spawnPosition = new Vector3(50, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    case 2:
+                        spawnPosition = new Vector3(50, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        spawnPosition = new Vector3(52.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    case 3:
+                        spawnPosition = new Vector3(47.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        spawnPosition = new Vector3(52.5F, 10, 20);
+                        Instantiate(verticalWall, spawnPosition, spawnRotation);
+                        break;
+                    default:
+                        break;
+
+                }
+            }
             // create wall for view 3
             spawnPosition = new Vector3(100, 3.4F, 20);
-            Instantiate(wall, spawnPosition, spawnRotation);
+            Instantiate(horizontalWall, spawnPosition, spawnRotation);
         }
     }
 
@@ -145,7 +212,7 @@ public class GameController : MonoBehaviour {
                 if (jumpVelocity > -15)
                 {
                     player.transform.Translate(Vector3.up * jumpVelocity * Time.deltaTime);
-                    jumpVelocity -= 40 * Time.deltaTime;
+                    jumpVelocity -= speed * 7 * Time.deltaTime;
                 }
                 else
                 {
@@ -236,6 +303,8 @@ public class GameController : MonoBehaviour {
     }
     public static void gameOver()
     {
-        HorizontalWallController.speed = 0;
+        WallController.speed = 0;
+        GridController.speed = 0;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
