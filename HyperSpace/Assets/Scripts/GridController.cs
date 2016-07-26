@@ -17,7 +17,8 @@ public class GridController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         posY += speed * Time.deltaTime;
+        if (posY > 40)
+            posY = posY - 40;
         mat.mainTextureOffset = new Vector2(0, posY);
-        Debug.Log("offset");
 	}
 }

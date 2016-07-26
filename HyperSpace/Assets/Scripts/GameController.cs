@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour {
     public float startWait;
     public float speed;
     public float maxSpeed;
-    public float jumpVelocity;
+    public float jumpPos;
     private State currentState = State.STATE_STANDING;
     private Location currentLocation = Location.LOCATION_CENTER;
     private View currentView = View.VIEW_TOP;
@@ -55,12 +55,14 @@ public class GameController : MonoBehaviour {
     private float mouseUpY;
     private int count;
     private int verticalPosition;
+    private float accelerator = 0;
+    private bool jumped = false;
 
     void Start()
     {
         Profiler.maxNumberOfSamplesPerFrame = 3;
         // player initial position
-        Vector3 spawnPosition = new Vector3(0, 1, -17);
+        Vector3 spawnPosition = new Vector3(0, 1, -16);
         // wall rotation
         Quaternion spawnRotation = Quaternion.identity;
         // generate player object
@@ -143,7 +145,7 @@ public class GameController : MonoBehaviour {
                 }
             }
             // create wall for view 3
-            spawnPosition = new Vector3(100, 3.4F, 20);
+            spawnPosition = new Vector3(100, 3, 20);
             Instantiate(horizontalWall, spawnPosition, spawnRotation);
         }
     }
@@ -156,14 +158,14 @@ public class GameController : MonoBehaviour {
                 if (currentState != playerState && currentView == View.VIEW_TOP)
                 {
                     currentState = playerState;
-                    jumpVelocity = 15;
+                    jumpPos = player.transform.position.y;
                 }
                 break;
             case State.STATE_DUCKING:
                 if (currentState != playerState && currentView == View.VIEW_BOTTOM)
                 {
                     currentState = playerState;
-                    jumpVelocity = 15;
+                    jumpPos = player.transform.position.y;
                 }
                 break;
         }
@@ -209,28 +211,38 @@ public class GameController : MonoBehaviour {
         switch(currentState)
         {
             case State.STATE_JUMPING:
-                if (jumpVelocity > -15)
+                if (jumpPos < 2 && !jumped)
                 {
-                    player.transform.Translate(Vector3.up * jumpVelocity * Time.deltaTime);
-                    jumpVelocity -= speed * 7 * Time.deltaTime;
+                    player.transform.position = new Vector3(player.transform.position.x, jumpPos, player.transform.position.z );
+                    accelerator += 0.001F;
+                    jumpPos += speed * Time.deltaTime + accelerator;
+                }
+                else if(player.transform.position.y > currentRef.y)
+                {
+                    jumped = true;
+                    player.transform.position = new Vector3(player.transform.position.x, jumpPos, player.transform.position.z);
+                    accelerator -= 0.0005F;
+                    jumpPos += speed * Time.deltaTime + accelerator;
                 }
                 else
                 {
+                    jumped = false;
                     player.transform.position = new Vector3(player.transform.position.x, refTopCenter.y, player.transform.position.z);
-                    jumpVelocity = 15;
+                    jumpPos = player.transform.position.y;
+                    accelerator = 0;
                     currentState = State.STATE_STANDING;
                 }
                 break;
             case State.STATE_DUCKING:
-                if (jumpVelocity > -15)
+                if (jumpPos > -13)
                 {
-                    player.transform.Translate(Vector3.up * -jumpVelocity * Time.deltaTime);
-                    jumpVelocity -= 40 * Time.deltaTime;
+                    player.transform.Translate(Vector3.up * -jumpPos * Time.deltaTime);
+                    jumpPos -= 40 * Time.deltaTime;
                 }
                 else
                 {
                     player.transform.position = new Vector3(player.transform.position.x, refBottomCenter.y, player.transform.position.z);
-                    jumpVelocity = 15;
+                    jumpPos = player.transform.position.y;
                     currentState = State.STATE_STANDING;
                 }
                 break;
@@ -261,19 +273,16 @@ public class GameController : MonoBehaviour {
                 if (mouseDownY > Screen.height * 2 / 3)
                 {
                     currentRef = refTopCenter;
-                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_TOP);
                 }
                 else if ((mouseDownY >= Screen.height * 1 / 3) && (mouseDownY <= Screen.height * 2 / 3))
                 {
                     currentRef = refMidCenter;
-                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_CENTER);
                 }
                 else if (mouseDownY < Screen.height * 1 / 3)
                 {
                     currentRef = refBottomCenter;
-                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_BOTTOM);
                 }
             }
@@ -284,6 +293,7 @@ public class GameController : MonoBehaviour {
     {
         if(currentView != newView)
         {
+            currentLocation = Location.LOCATION_CENTER;
             currentView = newView;
             switch(newView)
             {
@@ -299,9 +309,9 @@ public class GameController : MonoBehaviour {
                 default:
                     break;
             }
-            currentLocation = Location.LOCATION_CENTER;
+            
             currentState = State.STATE_STANDING;
-            jumpVelocity = 15;
+            jumpPos = 15;
         }
     }
     public static void gameOver()

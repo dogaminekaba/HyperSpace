@@ -22,25 +22,25 @@ public class InputController : MonoBehaviour {
 
         if (swipe.x < -Mathf.Abs(swipe.y))
         {
-            Debug.Log("left swipe");
+            //Debug.Log("left swipe");
             gc.movePlayer(GameController.LaneState.STATE_MOVELEFT);
         }
 
         if (swipe.x > Mathf.Abs(swipe.y))
         {
-            Debug.Log("right swipe");
+            //Debug.Log("right swipe");
             gc.movePlayer(GameController.LaneState.STATE_MOVERIGHT);
         }
 
         if (swipe.y < -Mathf.Abs(swipe.x))
         {
-            Debug.Log("down swipe");
+            //Debug.Log("down swipe");
             gc.movePlayer(GameController.State.STATE_DUCKING);
         }
 
         if (swipe.y > Mathf.Abs(swipe.x))
         {
-            Debug.Log("up swipe");
+            //Debug.Log("up swipe");
             gc.movePlayer(GameController.State.STATE_JUMPING);
         }
     }
