@@ -261,16 +261,19 @@ public class GameController : MonoBehaviour {
                 if (mouseDownY > Screen.height * 2 / 3)
                 {
                     currentRef = refTopCenter;
+                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_TOP);
                 }
                 else if ((mouseDownY >= Screen.height * 1 / 3) && (mouseDownY <= Screen.height * 2 / 3))
                 {
                     currentRef = refMidCenter;
+                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_CENTER);
                 }
                 else if (mouseDownY < Screen.height * 1 / 3)
                 {
                     currentRef = refBottomCenter;
+                    currentLocation = Location.LOCATION_CENTER;
                     changeView(View.VIEW_BOTTOM);
                 }
             }
