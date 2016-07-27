@@ -48,6 +48,7 @@ public class WallController : MonoBehaviour
             t.position = new Vector3(50, t.position.y, 20);
         else
             t.position = new Vector3(47.5F, t.position.y, 20);
+        // create new pickup
     }
 
 }

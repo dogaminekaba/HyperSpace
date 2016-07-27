@@ -44,9 +44,9 @@
                 return o;
             }
            
-            fixed4 frag (output i) : COLOR
+            half4 frag (output i) : COLOR
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
+                half4 col = tex2D(_MainTex, i.uv);
  
                 col *= _Color;
  

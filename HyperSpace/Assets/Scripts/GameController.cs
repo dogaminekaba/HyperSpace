@@ -32,14 +32,18 @@ public class GameController : MonoBehaviour {
     };
 
     public GameObject horizontalWall;
+    public GameObject horizontalUpperWall;
     public GameObject verticalWall;
     public GameObject playerPrefab;
+    public GameObject playerShadowPrefab;
     public GameObject gridPrefab;
-    public GameObject player;
-    public float startWait;
-    public float speed;
-    public float maxSpeed;
-    public float jumpPos;
+    private GameObject player;
+    private GameObject playerShadow;
+    private float startWait = 0;
+    private float speed = 5;
+    private float maxSpeed = 18;
+    private float jumpPosY;
+    private float duckPosY;
     private State currentState = State.STATE_STANDING;
     private Location currentLocation = Location.LOCATION_CENTER;
     private View currentView = View.VIEW_TOP;
@@ -57,6 +61,8 @@ public class GameController : MonoBehaviour {
     private int verticalPosition;
     private float accelerator = 0;
     private bool jumped = false;
+    private bool ducked = false;
+    private int oldVerticalPos=-1;
 
     void Start()
     {
@@ -67,11 +73,16 @@ public class GameController : MonoBehaviour {
         Quaternion spawnRotation = Quaternion.identity;
         // generate player object
         player = (GameObject)Instantiate(playerPrefab, spawnPosition, spawnRotation);
+        spawnPosition = new Vector3(0, 0.1F, -16);
+        playerShadow = (GameObject)Instantiate(playerShadowPrefab, spawnPosition, spawnRotation);
+        spawnPosition = new Vector3(0, 1, -16);
         WallController.speed = speed;
         GridController.speed = speed;
         WallController.maxSpeed = maxSpeed;
         currentRef = refTopCenter;
         StartCoroutine(SpawnWalls());
+        StartCoroutine(UpdateSpeed());
+        Screen.orientation = ScreenOrientation.Portrait;
     }
 
     IEnumerator SpawnWalls()
@@ -96,6 +107,9 @@ public class GameController : MonoBehaviour {
             count = 2;
             // there are 3 different positions for vertical walls
             verticalPosition = Random.Range(1, 3);
+            if (oldVerticalPos == verticalPosition)
+                verticalPosition += 1;
+            oldVerticalPos = verticalPosition;
             if(count == 1)
             {
                 switch (verticalPosition)
@@ -146,7 +160,7 @@ public class GameController : MonoBehaviour {
             }
             // create wall for view 3
             spawnPosition = new Vector3(100, 3, 20);
-            Instantiate(horizontalWall, spawnPosition, spawnRotation);
+            Instantiate(horizontalUpperWall, spawnPosition, spawnRotation);
         }
     }
 
@@ -158,14 +172,14 @@ public class GameController : MonoBehaviour {
                 if (currentState != playerState && currentView == View.VIEW_TOP)
                 {
                     currentState = playerState;
-                    jumpPos = player.transform.position.y;
+                    jumpPosY = player.transform.position.y;
                 }
                 break;
             case State.STATE_DUCKING:
                 if (currentState != playerState && currentView == View.VIEW_BOTTOM)
                 {
                     currentState = playerState;
-                    jumpPos = player.transform.position.y;
+                    duckPosY = player.transform.position.y;
                 }
                 break;
         }
@@ -211,42 +225,51 @@ public class GameController : MonoBehaviour {
         switch(currentState)
         {
             case State.STATE_JUMPING:
-                if (jumpPos < 2 && !jumped)
+                if (jumpPosY < 4 && !jumped)
                 {
-                    player.transform.position = new Vector3(player.transform.position.x, jumpPos, player.transform.position.z );
-                    accelerator += 0.001F;
-                    jumpPos += speed * Time.deltaTime + accelerator;
+                    player.transform.position = new Vector3(player.transform.position.x, jumpPosY, player.transform.position.z );
+                    accelerator += 0.01F;
+                    jumpPosY += Time.deltaTime * (accelerator + speed);
                 }
                 else if(player.transform.position.y > currentRef.y)
                 {
                     jumped = true;
-                    player.transform.position = new Vector3(player.transform.position.x, jumpPos, player.transform.position.z);
-                    accelerator -= 0.0005F;
-                    jumpPos += speed * Time.deltaTime + accelerator;
+                    player.transform.position = new Vector3(player.transform.position.x, jumpPosY, player.transform.position.z);
+                    accelerator += 0.01F;
+                    jumpPosY -= Time.deltaTime * (speed + accelerator);
                 }
                 else
                 {
                     jumped = false;
-                    player.transform.position = new Vector3(player.transform.position.x, refTopCenter.y, player.transform.position.z);
-                    jumpPos = player.transform.position.y;
+                    player.transform.position = new Vector3(player.transform.position.x, currentRef.y, player.transform.position.z);
+                    jumpPosY = player.transform.position.y;
                     accelerator = 0;
                     currentState = State.STATE_STANDING;
                 }
                 break;
+            // inverse jump
             case State.STATE_DUCKING:
-                if (jumpPos > -13)
+                if (duckPosY > 0.8F && !ducked)
                 {
-                    player.transform.Translate(Vector3.up * -jumpPos * Time.deltaTime);
-                    jumpPos -= 40 * Time.deltaTime;
+                    player.transform.position = new Vector3(player.transform.position.x, duckPosY, player.transform.position.z);
+                    accelerator += 0.01F;
+                    duckPosY -= Time.deltaTime * (accelerator + speed);
+                }
+                else if(player.transform.position.y < currentRef.y)
+                {
+                    ducked = true;
+                    player.transform.position = new Vector3(player.transform.position.x, duckPosY, player.transform.position.z);
+                    accelerator += 0.01F;
+                    duckPosY += Time.deltaTime * (speed + accelerator);
                 }
                 else
                 {
-                    player.transform.position = new Vector3(player.transform.position.x, refBottomCenter.y, player.transform.position.z);
-                    jumpPos = player.transform.position.y;
+                    ducked = false;
+                    player.transform.position = new Vector3(player.transform.position.x, currentRef.y, player.transform.position.z);
+                    duckPosY = player.transform.position.y;
+                    accelerator = 0;
                     currentState = State.STATE_STANDING;
                 }
-                break;
-            default:
                 break;
         }
         if (timeCounter < 1.1)
@@ -257,6 +280,7 @@ public class GameController : MonoBehaviour {
             timeCounter += Time.deltaTime / time;
 
             player.transform.position = new Vector3(newX, player.transform.position.y, player.transform.position.z);
+            playerShadow.transform.position = new Vector3(newX, playerShadow.transform.position.y, player.transform.position.z);
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -289,7 +313,7 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    void changeView(View newView)
+    private void changeView(View newView)
     {
         if(currentView != newView)
         {
@@ -299,25 +323,42 @@ public class GameController : MonoBehaviour {
             {
                 case View.VIEW_TOP:
                     player.transform.position = new Vector3(refTopCenter.x + GetLaneXPos(currentLocation), refTopCenter.y, player.transform.position.z);
+                    playerShadow.transform.position = new Vector3(refTopCenter.x + GetLaneXPos(currentLocation), playerShadow.transform.position.y, player.transform.position.z);
                     break;
                 case View.VIEW_CENTER:
                     player.transform.position = new Vector3(refMidCenter.x + GetLaneXPos(currentLocation), refMidCenter.y, player.transform.position.z);
+                    playerShadow.transform.position = new Vector3(refMidCenter.x + GetLaneXPos(currentLocation), playerShadow.transform.position.y, player.transform.position.z);
                     break;
                 case View.VIEW_BOTTOM:
                     player.transform.position = new Vector3(refBottomCenter.x + GetLaneXPos(currentLocation), refBottomCenter.y, player.transform.position.z);
+                    playerShadow.transform.position = new Vector3(refBottomCenter.x + GetLaneXPos(currentLocation), playerShadow.transform.position.y, player.transform.position.z);
                     break;
                 default:
                     break;
             }
             
             currentState = State.STATE_STANDING;
-            jumpPos = 15;
+            jumpPosY = 15;
         }
     }
+
+    IEnumerator UpdateSpeed()
+    {
+        while(speed < maxSpeed)
+        {
+            yield return new WaitForSeconds(2);
+            speed += 0.02F;
+            WallController.speed = speed;
+            GridController.speed = speed;
+            PlayerController.speed = speed;
+        }
+    }
+
     public static void gameOver()
     {
         WallController.speed = 0;
         GridController.speed = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
 }
