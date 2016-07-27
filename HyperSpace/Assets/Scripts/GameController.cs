@@ -63,9 +63,11 @@ public class GameController : MonoBehaviour {
     private bool jumped = false;
     private bool ducked = false;
     private int oldVerticalPos=-1;
+    private PickUpController pickUpC;
 
     void Start()
     {
+        pickUpC = GetComponent<PickUpController>();
         Profiler.maxNumberOfSamplesPerFrame = 3;
         // player initial position
         Vector3 spawnPosition = new Vector3(0, 1, -16);
@@ -95,6 +97,9 @@ public class GameController : MonoBehaviour {
         Instantiate(gridPrefab, spawnPosition, spawnRotation);
         spawnPosition = new Vector3(100, 0, 0);
         Instantiate(gridPrefab, spawnPosition, spawnRotation);
+
+        Vector3 pos = new Vector3(2, 1, -16);
+        pickUpC.createSheild(pos, Quaternion.identity);
 
         for (int i = 0; i < 3; ++i )
         {
