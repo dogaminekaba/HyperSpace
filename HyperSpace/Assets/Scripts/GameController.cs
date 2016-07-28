@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour {
     };
 
     public Text scoreText;
+    public Text livesText;
     public static bool gameEnded = false;
     public GameObject horizontalWall;
     public GameObject horizontalUpperWall;
@@ -65,13 +66,13 @@ public class GameController : MonoBehaviour {
     private bool jumped = false;
     private bool ducked = false;
     private int oldVerticalPos=-1;
-    private PickUpFactory pickUpC;
+    private PickUpFactory pickUpFact;
     private PlayerController playerControl;
     
 
     void Start()
     {
-        pickUpC = GetComponent<PickUpFactory>();
+        pickUpFact = GetComponent<PickUpFactory>();
         Profiler.maxNumberOfSamplesPerFrame = 3;
         // player initial position
         Vector3 spawnPosition = new Vector3(0, 1, -16);
@@ -92,28 +93,54 @@ public class GameController : MonoBehaviour {
         StartCoroutine(SpawnPickUps());
         Screen.orientation = ScreenOrientation.Portrait;
         playerControl = player.GetComponent<PlayerController>();
-        scoreText.text = "Lives: " + playerControl.getLives().ToString();
+        livesText.text = "Lives: " + playerControl.getLives().ToString();
+        scoreText.text = "Score: " + playerControl.getScore().ToString();
     }
 
     IEnumerator SpawnPickUps()
     {
         Vector3 PickUpPos;
-        int pickUpPosX = 0;
+        int sheildPosX = 0;
+        int sheildPosView = 0;
+        int greenAlienPosX = 0;
         while (!gameEnded)
         {
-            yield return new WaitForSeconds(13F / speed);
-            // 1st gameplay view
-            pickUpPosX = Random.Range(-1, 1);
-            PickUpPos = new Vector3(refTopCenter.x + pickUpPosX*2.5F, refTopCenter.y, 15);
-            pickUpC.createSheild(PickUpPos, Quaternion.identity);
-            // 2nd gameplay view
-            pickUpPosX = Random.Range(-1, 1);
-            PickUpPos = new Vector3(refMidCenter.x + pickUpPosX * 2.5F, refMidCenter.y, 15);
-            pickUpC.createSheild(PickUpPos, Quaternion.identity);
-            // 3rd gameplay view
-            pickUpPosX = Random.Range(-1, 1);
-            PickUpPos = new Vector3(refBottomCenter.x + pickUpPosX * 2.5F, refBottomCenter.y, 15);
-            pickUpC.createSheild(PickUpPos, Quaternion.identity);
+            sheildPosView = Random.Range(0, 3);
+            sheildPosX = Random.Range(-1, 1);
+            yield return new WaitForSeconds(39F / speed);
+
+            if (playerControl.getLives() < 3)
+            {
+                if (sheildPosView == 1)
+                {
+                    // 1st gameplay view
+                    PickUpPos = new Vector3(refTopCenter.x + sheildPosX * 2.5F, refTopCenter.y, 15);
+                    pickUpFact.createSheild(PickUpPos, Quaternion.identity);
+                }
+                else if (sheildPosView == 2)
+                {
+                    // 2nd gameplay view
+                    PickUpPos = new Vector3(refMidCenter.x + sheildPosX * 2.5F, refMidCenter.y, 15);
+                    pickUpFact.createSheild(PickUpPos, Quaternion.identity);
+                }
+                else if (sheildPosView == 3)
+                {
+                    // 3rd gameplay view
+                    PickUpPos = new Vector3(refBottomCenter.x + sheildPosX * 2.5F, refBottomCenter.y, 15);
+                    pickUpFact.createSheild(PickUpPos, Quaternion.identity);
+                }
+            }
+            for (int i = 1; i < 4; ++i)
+            {
+                if (i != sheildPosView)
+                {
+                    greenAlienPosX = Random.Range(-1, 1);
+                    PickUpPos = new Vector3((i-1) * 50 + sheildPosX * 2.5F, 1, 15);
+                    Debug.Log("create alien");
+                    pickUpFact.createAlien(PickUpPos, Quaternion.identity);
+                }
+            }
+
         }
         
     }
@@ -253,7 +280,8 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        scoreText.text = "Lives: " + playerControl.getLives().ToString();
+        livesText.text = "Lives: " + playerControl.getLives().ToString();
+        scoreText.text = "Score: " + playerControl.getScore().ToString();
         if (player.gameObject == null)
             return;
         switch(currentState)

@@ -6,12 +6,13 @@ public class PlayerController : MonoBehaviour {
     static public float speed;
     public GameObject explosionPrefab;
     private GameObject explosion;
-    private Rigidbody rb;
     private int lives = 3;
+    private int score = 0;
 
 	// Use this for initialization
-	void Start () {
-        rb = GetComponent<Rigidbody>();
+	void Start () 
+    {
+
 	}
 
     void OnTriggerEnter(Collider other)
@@ -19,6 +20,11 @@ public class PlayerController : MonoBehaviour {
         if (other.tag == "Sheild")
         {
             ++lives;
+            Destroy(other.gameObject);
+        }
+        else if(other.tag == "Alien")
+        {
+            ++score;
             Destroy(other.gameObject);
         }
         else
@@ -43,5 +49,10 @@ public class PlayerController : MonoBehaviour {
     public int getLives()
     {
         return lives;
+    }
+
+    public int getScore()
+    {
+        return score;
     }
 }

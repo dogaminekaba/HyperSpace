@@ -1,11 +1,12 @@
 fileFormatVersion: 2
 guid: 7dbbd506224bcf847a5b43c883c6d5e9
-timeCreated: 1469621038
+timeCreated: 1469746242
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - sheildPrefab: {fileID: 115966, guid: bccf47c893b6ef74d8bc3908cf8120d0, type: 2}
+  - greenAlienPrefab: {fileID: 165450, guid: 4f4c1ce455e5eb743a0cb2e46d2e34d2, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

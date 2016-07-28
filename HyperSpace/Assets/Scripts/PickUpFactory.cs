@@ -4,6 +4,7 @@ using System.Collections;
 public class PickUpFactory : MonoBehaviour {
 
     public GameObject sheildPrefab;
+    public GameObject greenAlienPrefab;
 
 	void Start () {
 	    
@@ -18,9 +19,18 @@ public class PickUpFactory : MonoBehaviour {
     {
         if (sheildPrefab == null)
         {
-            Debug.Log("sheild null");
             return null;
         }
         return (GameObject)Instantiate(sheildPrefab, position, rotation);
     }
+
+    public GameObject createAlien(Vector3 position, Quaternion rotation)
+    {
+        if (greenAlienPrefab == null)
+        {
+            return null;
+        }
+        return (GameObject)Instantiate(greenAlienPrefab, position, rotation);
+    }
+
 }
