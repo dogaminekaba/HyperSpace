@@ -5,7 +5,6 @@ public class WallController : MonoBehaviour
 {
     static public float speed;
     static public float maxSpeed;
-    public GameObject explosion;
     private Transform t;
 
     // Use this for initialization
@@ -24,20 +23,6 @@ public class WallController : MonoBehaviour
             else if (t.tag == "Vertical Wall")
                 rePosVerticalWalls();
         }
-        
-        
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if(other.tag == "Player")
-        {
-            Debug.Log("game over");
-            Instantiate(explosion, other.transform.position, other.transform.rotation);
-            Destroy(other.gameObject);
-            GameController.gameOver();
-        }
-       
     }
 
     void rePosVerticalWalls()
@@ -48,7 +33,6 @@ public class WallController : MonoBehaviour
             t.position = new Vector3(50, t.position.y, 20);
         else
             t.position = new Vector3(47.5F, t.position.y, 20);
-        // create new pickup
     }
 
 }

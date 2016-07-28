@@ -14,6 +14,7 @@ public class PickUpController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	    t.Translate(0, 0, -speed * Time.deltaTime);
+
         if (t.position.z < -20)
         {
             Destroy(GetComponent<GameObject>());

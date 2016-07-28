@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
@@ -31,6 +32,8 @@ public class GameController : MonoBehaviour {
         VIEW_BOTTOM
     };
 
+    public Text scoreText;
+    public static bool gameEnded = false;
     public GameObject horizontalWall;
     public GameObject horizontalUpperWall;
     public GameObject verticalWall;
@@ -63,7 +66,8 @@ public class GameController : MonoBehaviour {
     private bool ducked = false;
     private int oldVerticalPos=-1;
     private PickUpFactory pickUpC;
-    public static bool gameEnded = false;
+    private PlayerController playerControl;
+    
 
     void Start()
     {
@@ -87,6 +91,8 @@ public class GameController : MonoBehaviour {
         StartCoroutine(UpdateSpeed());
         StartCoroutine(SpawnPickUps());
         Screen.orientation = ScreenOrientation.Portrait;
+        playerControl = player.GetComponent<PlayerController>();
+        scoreText.text = "Lives: " + playerControl.getLives().ToString();
     }
 
     IEnumerator SpawnPickUps()
@@ -98,17 +104,14 @@ public class GameController : MonoBehaviour {
             yield return new WaitForSeconds(13F / speed);
             // 1st gameplay view
             pickUpPosX = Random.Range(-1, 1);
-            Debug.Log("top: " + pickUpPosX);
             PickUpPos = new Vector3(refTopCenter.x + pickUpPosX*2.5F, refTopCenter.y, 15);
             pickUpC.createSheild(PickUpPos, Quaternion.identity);
             // 2nd gameplay view
             pickUpPosX = Random.Range(-1, 1);
-            Debug.Log("mid: " + pickUpPosX);
             PickUpPos = new Vector3(refMidCenter.x + pickUpPosX * 2.5F, refMidCenter.y, 15);
             pickUpC.createSheild(PickUpPos, Quaternion.identity);
             // 3rd gameplay view
             pickUpPosX = Random.Range(-1, 1);
-            Debug.Log("bottom: " + pickUpPosX);
             PickUpPos = new Vector3(refBottomCenter.x + pickUpPosX * 2.5F, refBottomCenter.y, 15);
             pickUpC.createSheild(PickUpPos, Quaternion.identity);
         }
@@ -250,6 +253,7 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
+        scoreText.text = "Lives: " + playerControl.getLives().ToString();
         if (player.gameObject == null)
             return;
         switch(currentState)
