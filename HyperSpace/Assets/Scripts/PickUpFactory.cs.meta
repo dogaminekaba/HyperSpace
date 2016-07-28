@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 7dbbd506224bcf847a5b43c883c6d5e9
+timeCreated: 1469621038
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - sheildPrefab: {fileID: 115966, guid: bccf47c893b6ef74d8bc3908cf8120d0, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

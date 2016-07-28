@@ -3,24 +3,20 @@ using System.Collections;
 
 public class PickUpController : MonoBehaviour {
 
-    public GameObject sheildPrefab; 
+    public static float speed = 0;
+    private Transform t;
 
+	// Use this for initialization
 	void Start () {
-	    
+        t = GetComponent<Transform>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
-
-    public GameObject createSheild(Vector3 position, Quaternion rotation)
-    {
-        if (sheildPrefab == null)
+	    t.Translate(0, 0, -speed * Time.deltaTime);
+        if (t.position.z < -20)
         {
-            Debug.Log("sheild null");
-            return null;
+            Destroy(GetComponent<GameObject>());
         }
-        return (GameObject)Instantiate(sheildPrefab, position, rotation);
-    }
+	}
 }

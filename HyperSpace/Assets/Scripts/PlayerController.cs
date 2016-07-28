@@ -10,4 +10,12 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
         rb = GetComponent<Rigidbody>();
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Sheild")
+        {
+            Destroy(other.gameObject);
+        }
+    }
 }

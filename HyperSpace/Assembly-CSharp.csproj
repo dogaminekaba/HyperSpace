@@ -73,6 +73,7 @@
      <Compile Include="Assets\Scripts\GridController.cs" />
      <Compile Include="Assets\Scripts\InputController.cs" />
      <Compile Include="Assets\Scripts\PickUpController.cs" />
+     <Compile Include="Assets\Scripts\PickUpFactory.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\WallController.cs" />
      <None Include="Assets\Prefabs\Materials\Transparent Shader.shader" />

@@ -49,7 +49,6 @@ public class GameController : MonoBehaviour {
     private View currentView = View.VIEW_TOP;
     private float timeCounter = 0;
     private float playerStartPosX = 0;
-    private float playerEndPosX = 0;
     private float vel = 20F;
     private Vector3 refTopCenter = new Vector3(0, 1, -17);
     private Vector3 refMidCenter = new Vector3(50, 1, -17);
@@ -63,11 +62,12 @@ public class GameController : MonoBehaviour {
     private bool jumped = false;
     private bool ducked = false;
     private int oldVerticalPos=-1;
-    private PickUpController pickUpC;
+    private PickUpFactory pickUpC;
+    public static bool gameEnded = false;
 
     void Start()
     {
-        pickUpC = GetComponent<PickUpController>();
+        pickUpC = GetComponent<PickUpFactory>();
         Profiler.maxNumberOfSamplesPerFrame = 3;
         // player initial position
         Vector3 spawnPosition = new Vector3(0, 1, -16);
@@ -80,11 +80,39 @@ public class GameController : MonoBehaviour {
         spawnPosition = new Vector3(0, 1, -16);
         WallController.speed = speed;
         GridController.speed = speed;
+        PickUpController.speed = speed;
         WallController.maxSpeed = maxSpeed;
         currentRef = refTopCenter;
         StartCoroutine(SpawnWalls());
         StartCoroutine(UpdateSpeed());
+        StartCoroutine(SpawnPickUps());
         Screen.orientation = ScreenOrientation.Portrait;
+    }
+
+    IEnumerator SpawnPickUps()
+    {
+        Vector3 PickUpPos;
+        int pickUpPosX = 0;
+        while (!gameEnded)
+        {
+            yield return new WaitForSeconds(13F / speed);
+            // 1st gameplay view
+            pickUpPosX = Random.Range(-1, 1);
+            Debug.Log("top: " + pickUpPosX);
+            PickUpPos = new Vector3(refTopCenter.x + pickUpPosX*2.5F, refTopCenter.y, 15);
+            pickUpC.createSheild(PickUpPos, Quaternion.identity);
+            // 2nd gameplay view
+            pickUpPosX = Random.Range(-1, 1);
+            Debug.Log("mid: " + pickUpPosX);
+            PickUpPos = new Vector3(refMidCenter.x + pickUpPosX * 2.5F, refMidCenter.y, 15);
+            pickUpC.createSheild(PickUpPos, Quaternion.identity);
+            // 3rd gameplay view
+            pickUpPosX = Random.Range(-1, 1);
+            Debug.Log("bottom: " + pickUpPosX);
+            PickUpPos = new Vector3(refBottomCenter.x + pickUpPosX * 2.5F, refBottomCenter.y, 15);
+            pickUpC.createSheild(PickUpPos, Quaternion.identity);
+        }
+        
     }
 
     IEnumerator SpawnWalls()
@@ -97,9 +125,6 @@ public class GameController : MonoBehaviour {
         Instantiate(gridPrefab, spawnPosition, spawnRotation);
         spawnPosition = new Vector3(100, 0, 0);
         Instantiate(gridPrefab, spawnPosition, spawnRotation);
-
-        Vector3 pos = new Vector3(2, 1, -16);
-        pickUpC.createSheild(pos, Quaternion.identity);
 
         for (int i = 0; i < 3; ++i )
         {
@@ -356,14 +381,18 @@ public class GameController : MonoBehaviour {
             WallController.speed = speed;
             GridController.speed = speed;
             PlayerController.speed = speed;
+            PickUpController.speed = speed;
         }
     }
 
     public static void gameOver()
     {
+        gameEnded = true;
         WallController.speed = 0;
         GridController.speed = 0;
+        PickUpController.speed = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        gameEnded = false;
     }
 
 }
