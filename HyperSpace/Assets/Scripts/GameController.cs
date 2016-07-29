@@ -17,6 +17,12 @@ public class GameController : MonoBehaviour {
         STATE_MOVERIGHT,
         STATE_MOVELEFT
     };
+    public enum View
+    {
+        VIEW_TOP,
+        VIEW_MID,
+        VIEW_BOTTOM
+    };
 
     private enum Location
     {
@@ -25,12 +31,6 @@ public class GameController : MonoBehaviour {
         LOCATION_RIGHT
     };
 
-    private enum View
-    {
-        VIEW_TOP,
-        VIEW_CENTER,
-        VIEW_BOTTOM
-    };
 
     public Text scoreText;
     public Text livesText;
@@ -68,7 +68,9 @@ public class GameController : MonoBehaviour {
     private int oldVerticalPos=-1;
     private PickUpFactory pickUpFact;
     private PlayerController playerControl;
-    
+    private int maxPickupCount = 5;
+    private int[] viewPickupCounts = {};
+    private bool needLife = false;
 
     void Start()
     {
@@ -95,6 +97,7 @@ public class GameController : MonoBehaviour {
         playerControl = player.GetComponent<PlayerController>();
         livesText.text = "Lives: " + playerControl.getLives().ToString();
         scoreText.text = "Score: " + playerControl.getScore().ToString();
+        viewPickupCounts = new int[3];
     }
 
     IEnumerator SpawnPickUps()
@@ -107,9 +110,9 @@ public class GameController : MonoBehaviour {
         {
             sheildPosView = Random.Range(0, 3);
             sheildPosX = Random.Range(-1, 1);
-            yield return new WaitForSeconds(39F / speed);
+            yield return new WaitForSeconds(13F / speed);
 
-            if (playerControl.getLives() < 3)
+            if (needLife)
             {
                 if (sheildPosView == 1)
                 {
@@ -130,17 +133,19 @@ public class GameController : MonoBehaviour {
                     pickUpFact.createSheild(PickUpPos, Quaternion.identity);
                 }
             }
+
             for (int i = 1; i < 4; ++i)
             {
-                if (i != sheildPosView)
+                Debug.Log("pickup count " + i + ": " + viewPickupCounts[i - 1]);
+                if (i != sheildPosView && (viewPickupCounts[i-1] < maxPickupCount-1))
                 {
                     greenAlienPosX = Random.Range(-1, 1);
                     PickUpPos = new Vector3((i-1) * 50 + sheildPosX * 2.5F, 1, 15);
                     Debug.Log("create alien");
                     pickUpFact.createAlien(PickUpPos, Quaternion.identity);
+                    
                 }
             }
-
         }
         
     }
@@ -364,15 +369,35 @@ public class GameController : MonoBehaviour {
                 else if ((mouseDownY >= Screen.height * 1 / 3) && (mouseDownY <= Screen.height * 2 / 3))
                 {
                     currentRef = refMidCenter;
-                    changeView(View.VIEW_CENTER);
+                    changeView(View.VIEW_MID);
                 }
                 else if (mouseDownY < Screen.height * 1 / 3)
                 {
                     currentRef = refBottomCenter;
                     changeView(View.VIEW_BOTTOM);
                 }
+                playerControl.changeView(currentView);
             }
         }
+
+        if (playerControl.getLives() < 3)
+            needLife = true;
+        else
+            needLife = false;
+
+        viewPickupCounts[0] = playerControl.getTopScore();
+        viewPickupCounts[1] = playerControl.getMidScore();
+        viewPickupCounts[2] = playerControl.getBottomScore();
+
+        int totalPickupCount = 0;
+
+        for (int i = 0; i < 3; ++i)
+            totalPickupCount += viewPickupCounts[i];
+
+        Debug.Log("total pickup: " + totalPickupCount);
+
+        if (totalPickupCount >= maxPickupCount)
+            maxPickupCount += 5;
     }
 
     private void changeView(View newView)
@@ -387,7 +412,7 @@ public class GameController : MonoBehaviour {
                     player.transform.position = new Vector3(refTopCenter.x + GetLaneXPos(currentLocation), refTopCenter.y, player.transform.position.z);
                     playerShadow.transform.position = new Vector3(refTopCenter.x + GetLaneXPos(currentLocation), playerShadow.transform.position.y, player.transform.position.z);
                     break;
-                case View.VIEW_CENTER:
+                case View.VIEW_MID:
                     player.transform.position = new Vector3(refMidCenter.x + GetLaneXPos(currentLocation), refMidCenter.y, player.transform.position.z);
                     playerShadow.transform.position = new Vector3(refMidCenter.x + GetLaneXPos(currentLocation), playerShadow.transform.position.y, player.transform.position.z);
                     break;

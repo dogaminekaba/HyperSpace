@@ -7,7 +7,11 @@ public class PlayerController : MonoBehaviour {
     public GameObject explosionPrefab;
     private GameObject explosion;
     private int lives = 3;
-    private int score = 0;
+    private int scoreTop = 0;
+    private int scoreMid = 0;
+    private int scoreBottom = 0;
+    private GameController.View currentView = GameController.View.VIEW_TOP;
+
 
 	// Use this for initialization
 	void Start () 
@@ -24,7 +28,7 @@ public class PlayerController : MonoBehaviour {
         }
         else if(other.tag == "Alien")
         {
-            ++score;
+            increaseScore();
             Destroy(other.gameObject);
         }
         else
@@ -53,6 +57,42 @@ public class PlayerController : MonoBehaviour {
 
     public int getScore()
     {
-        return score;
+        return scoreTop + scoreMid + scoreBottom;
+    }
+
+    public int getTopScore()
+    {
+        return scoreTop;
+    }
+
+    public int getMidScore()
+    {
+        return scoreMid;
+    }
+
+    public int getBottomScore()
+    {
+        return scoreBottom;
+    }
+
+    public void changeView(GameController.View view)
+    {
+        currentView = view;
+    }
+
+    private void increaseScore()
+    {
+        switch(currentView)
+        {
+            case GameController.View.VIEW_TOP:
+                ++scoreTop;
+                break;
+            case GameController.View.VIEW_MID:
+                ++scoreMid;
+                break;
+            case GameController.View.VIEW_BOTTOM:
+                ++scoreBottom;
+                break;
+        }
     }
 }
