@@ -34,6 +34,7 @@ public class GameController : MonoBehaviour {
 
     public Text scoreText;
     public Text livesText;
+    public Image alienImage;
     public static bool gameEnded = false;
     public GameObject horizontalWall;
     public GameObject horizontalUpperWall;
@@ -71,6 +72,7 @@ public class GameController : MonoBehaviour {
     private int maxPickupCount = 5;
     private int[] viewPickupCounts = {};
     private bool needLife = false;
+    private float treeLifeTime = 1;
 
     void Start()
     {
@@ -93,10 +95,11 @@ public class GameController : MonoBehaviour {
         StartCoroutine(SpawnWalls());
         StartCoroutine(UpdateSpeed());
         StartCoroutine(SpawnPickUps());
+        StartCoroutine(reduceTreeLife());
         Screen.orientation = ScreenOrientation.Portrait;
         playerControl = player.GetComponent<PlayerController>();
-        livesText.text = "Lives: " + playerControl.getLives().ToString();
-        scoreText.text = "Score: " + playerControl.getScore().ToString();
+        livesText.text = "x " + playerControl.getLives().ToString();
+        scoreText.text = "x " + playerControl.getScore().ToString();
         viewPickupCounts = new int[3];
     }
 
@@ -105,6 +108,7 @@ public class GameController : MonoBehaviour {
         Vector3 PickUpPos;
         int sheildPosX = 0;
         int sheildPosView = 0;
+        int alienPosView = 0;
         int greenAlienPosX = 0;
         while (!gameEnded)
         {
@@ -134,17 +138,17 @@ public class GameController : MonoBehaviour {
                 }
             }
 
-            for (int i = 1; i < 4; ++i)
+
+            alienPosView = Random.Range(1, 3);
+            while(sheildPosView == alienPosView)
+                alienPosView = Random.Range(1, 3);
+
+            if (viewPickupCounts[alienPosView-1] < maxPickupCount-1)
             {
-                Debug.Log("pickup count " + i + ": " + viewPickupCounts[i - 1]);
-                if (i != sheildPosView && (viewPickupCounts[i-1] < maxPickupCount-1))
-                {
-                    greenAlienPosX = Random.Range(-1, 1);
-                    PickUpPos = new Vector3((i-1) * 50 + sheildPosX * 2.5F, 1, 15);
-                    Debug.Log("create alien");
-                    pickUpFact.createAlien(PickUpPos, Quaternion.identity);
+                greenAlienPosX = Random.Range(-1, 1);
+                PickUpPos = new Vector3((alienPosView-1) * 50 + sheildPosX * 2.5F, 1, 15);
+                pickUpFact.createAlien(PickUpPos, Quaternion.identity);
                     
-                }
             }
         }
         
@@ -229,6 +233,34 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    IEnumerator reduceTreeLife()
+    {
+        yield return new WaitForSeconds(5);
+        int oldScore = playerControl.getScore();
+        int newScore = oldScore;
+
+        while(!gameEnded)
+        {
+            newScore = playerControl.getScore();
+            if (newScore > oldScore)
+            {
+                treeLifeTime = 1;
+                oldScore = newScore;
+            }
+            alienImage.fillAmount = treeLifeTime;
+            if (treeLifeTime > 0)
+                treeLifeTime -= 0.001F;
+            else
+            {
+                playerControl.decreaseLives();
+                treeLifeTime = 1;
+
+            }
+            yield return new WaitForSeconds(0.01F);
+        }
+
+    }
+
     public void movePlayer(State playerState)
     {
         switch(playerState)
@@ -285,8 +317,8 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        livesText.text = "Lives: " + playerControl.getLives().ToString();
-        scoreText.text = "Score: " + playerControl.getScore().ToString();
+        livesText.text = "x " + playerControl.getLives().ToString();
+        scoreText.text = "x " + playerControl.getScore().ToString();
         if (player.gameObject == null)
             return;
         switch(currentState)
@@ -393,8 +425,6 @@ public class GameController : MonoBehaviour {
 
         for (int i = 0; i < 3; ++i)
             totalPickupCount += viewPickupCounts[i];
-
-        Debug.Log("total pickup: " + totalPickupCount);
 
         if (totalPickupCount >= maxPickupCount)
             maxPickupCount += 5;

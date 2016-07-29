@@ -37,17 +37,25 @@ public class PlayerController : MonoBehaviour {
             {
                 if (explosion != null)
                     Destroy(explosion);
-                explosion = (GameObject)Instantiate(explosionPrefab, transform.position, other.transform.rotation);
+                explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
                 GameController.gameOver();
             }
             else
             {
                 if (explosion != null)
                     Destroy(explosion);
-                explosion = (GameObject)Instantiate(explosionPrefab, transform.position, other.transform.rotation);
+                explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
                 --lives;
             }
         }
+    }
+
+    public void decreaseLives()
+    {
+        if (explosion != null)
+            Destroy(explosion);
+        explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
+        --lives;
     }
 
     public int getLives()
