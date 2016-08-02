@@ -34,6 +34,7 @@ public class GameController : MonoBehaviour {
 
     public Text scoreText;
     public Text livesText;
+    public Text endScore;
     public Image alienImage;
     public static bool gameEnded = false;
     public GameObject horizontalWall;
@@ -45,7 +46,7 @@ public class GameController : MonoBehaviour {
     private GameObject player;
     private GameObject playerShadow;
     private float startWait = 0;
-    private float speed = 5;
+    private float speed = 8;
     private float maxSpeed = 18;
     private float jumpPosY;
     private float duckPosY;
@@ -69,10 +70,12 @@ public class GameController : MonoBehaviour {
     private int oldVerticalPos=-1;
     private PickUpFactory pickUpFact;
     private PlayerController playerControl;
-    private int maxPickupCount = 5;
+    private int maxPickupCount = 3;
     private int[] viewPickupCounts = {};
     private bool needLife = false;
     private float treeLifeTime = 1;
+    [SerializeField]
+    private GameObject endScreenUI;
 
     void Start()
     {
@@ -87,20 +90,27 @@ public class GameController : MonoBehaviour {
         spawnPosition = new Vector3(0, 0.1F, -16);
         playerShadow = (GameObject)Instantiate(playerShadowPrefab, spawnPosition, spawnRotation);
         spawnPosition = new Vector3(0, 1, -16);
-        WallController.speed = speed;
-        GridController.speed = speed;
-        PickUpController.speed = speed;
+        WallController.speed = 0;
+        GridController.speed = 0;
+        PickUpController.speed = 0;
         WallController.maxSpeed = maxSpeed;
         currentRef = refTopCenter;
-        StartCoroutine(SpawnWalls());
-        StartCoroutine(UpdateSpeed());
-        StartCoroutine(SpawnPickUps());
-        StartCoroutine(reduceTreeLife());
         Screen.orientation = ScreenOrientation.Portrait;
         playerControl = player.GetComponent<PlayerController>();
         livesText.text = "x " + playerControl.getLives().ToString();
         scoreText.text = "x " + playerControl.getScore().ToString();
         viewPickupCounts = new int[3];
+
+        StartCoroutine(SpawnWalls());
+        StartCoroutine(UpdateSpeed());
+        StartCoroutine(SpawnPickUps());
+        StartCoroutine(reduceTreeLife());
+
+        WallController.speed = speed;
+        GridController.speed = speed;
+        PickUpController.speed = speed;
+
+        endScreenUI.SetActive(false);
     }
 
     IEnumerator SpawnPickUps()
@@ -112,7 +122,7 @@ public class GameController : MonoBehaviour {
         int greenAlienPosX = 0;
         while (!gameEnded)
         {
-            sheildPosView = Random.Range(0, 3);
+            sheildPosView = Random.Range(0, 4);
             sheildPosX = Random.Range(-1, 1);
             yield return new WaitForSeconds(13F / speed);
 
@@ -139,16 +149,14 @@ public class GameController : MonoBehaviour {
             }
 
 
-            alienPosView = Random.Range(1, 3);
+            alienPosView = Random.Range(1, 4);
             while(sheildPosView == alienPosView)
-                alienPosView = Random.Range(1, 3);
-
-            if (viewPickupCounts[alienPosView-1] < maxPickupCount-1)
+                alienPosView = Random.Range(1, 4);
+            if (viewPickupCounts[alienPosView-1] < maxPickupCount-2)
             {
                 greenAlienPosX = Random.Range(-1, 1);
                 PickUpPos = new Vector3((alienPosView-1) * 50 + sheildPosX * 2.5F, 1, 15);
                 pickUpFact.createAlien(PickUpPos, Quaternion.identity);
-                    
             }
         }
         
@@ -168,7 +176,6 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < 3; ++i )
         {
             // create wall for view 1
-            yield return new WaitForSeconds(13F / speed);
             spawnPosition = new Vector3(0, 0.75F, 20);
             Instantiate(horizontalWall, spawnPosition, spawnRotation);
 
@@ -230,6 +237,7 @@ public class GameController : MonoBehaviour {
             // create wall for view 3
             spawnPosition = new Vector3(100, 3, 20);
             Instantiate(horizontalUpperWall, spawnPosition, spawnRotation);
+            yield return new WaitForSeconds(13F / speed);
         }
     }
 
@@ -382,11 +390,11 @@ public class GameController : MonoBehaviour {
             playerShadow.transform.position = new Vector3(newX, playerShadow.transform.position.y, player.transform.position.z);
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !endScreenUI.activeInHierarchy)
         {
             mouseDownY = Input.mousePosition.y;
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(0) && !endScreenUI.activeInHierarchy)
         {
             mouseUpY = Input.mousePosition.y;
             float tapTreshold = Mathf.Abs(mouseDownY - mouseUpY);
@@ -428,6 +436,9 @@ public class GameController : MonoBehaviour {
 
         if (totalPickupCount >= maxPickupCount)
             maxPickupCount += 5;
+
+        if (playerControl.getLives() < 1)
+            gameOver();
     }
 
     private void changeView(View newView)
@@ -467,19 +478,24 @@ public class GameController : MonoBehaviour {
             speed += 0.02F;
             WallController.speed = speed;
             GridController.speed = speed;
-            PlayerController.speed = speed;
             PickUpController.speed = speed;
         }
     }
 
-    public static void gameOver()
+    private void gameOver()
     {
         gameEnded = true;
         WallController.speed = 0;
         GridController.speed = 0;
         PickUpController.speed = 0;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        gameEnded = false;
+        endScore.text = playerControl.getScore().ToString();
+        endScreenUI.SetActive(true);
     }
 
+    public void StartNewGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        playerControl.resetScore();
+        gameEnded = false;
+    }
 }

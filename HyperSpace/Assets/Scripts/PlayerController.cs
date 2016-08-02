@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-    static public float speed;
     public GameObject explosionPrefab;
+    public bool firstPlay = true;
     private GameObject explosion;
     private int lives = 3;
     private int scoreTop = 0;
@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour {
                 if (explosion != null)
                     Destroy(explosion);
                 explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
-                GameController.gameOver();
+                --lives;
             }
             else
             {
@@ -86,6 +86,14 @@ public class PlayerController : MonoBehaviour {
     public void changeView(GameController.View view)
     {
         currentView = view;
+    }
+
+    public void resetScore()
+    {
+        lives = 3;
+        scoreTop = 0;
+        scoreMid = 0;
+        scoreBottom = 0;
     }
 
     private void increaseScore()
