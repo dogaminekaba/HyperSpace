@@ -33,17 +33,15 @@ public class GameController : MonoBehaviour {
 
 
     public Text scoreText;
-    public Text livesText;
     public Text endScore;
     public Image alienImage;
     public static bool gameEnded = false;
     public GameObject horizontalWall;
     public GameObject horizontalUpperWall;
     public GameObject verticalWall;
-    public GameObject playerPrefab;
     public GameObject playerShadowPrefab;
     public GameObject gridPrefab;
-    private GameObject player;
+    public GameObject player;
     private GameObject playerShadow;
     private float startWait = 0;
     private float speed = 8;
@@ -86,7 +84,6 @@ public class GameController : MonoBehaviour {
         // wall rotation
         Quaternion spawnRotation = Quaternion.identity;
         // generate player object
-        player = (GameObject)Instantiate(playerPrefab, spawnPosition, spawnRotation);
         spawnPosition = new Vector3(0, 0.1F, -16);
         playerShadow = (GameObject)Instantiate(playerShadowPrefab, spawnPosition, spawnRotation);
         spawnPosition = new Vector3(0, 1, -16);
@@ -97,8 +94,7 @@ public class GameController : MonoBehaviour {
         currentRef = refTopCenter;
         Screen.orientation = ScreenOrientation.Portrait;
         playerControl = player.GetComponent<PlayerController>();
-        livesText.text = "x " + playerControl.getLives().ToString();
-        scoreText.text = "x " + playerControl.getScore().ToString();
+        scoreText.text = playerControl.getScore().ToString();
         viewPickupCounts = new int[3];
 
         StartCoroutine(SpawnWalls());
@@ -155,7 +151,7 @@ public class GameController : MonoBehaviour {
             if (viewPickupCounts[alienPosView-1] < maxPickupCount-2)
             {
                 greenAlienPosX = Random.Range(-1, 1);
-                PickUpPos = new Vector3((alienPosView-1) * 50 + sheildPosX * 2.5F, 1, 15);
+                PickUpPos = new Vector3((alienPosView-1) * 50 + sheildPosX * 2.5F, currentRef.y, 15);
                 pickUpFact.createAlien(PickUpPos, Quaternion.identity);
             }
         }
@@ -325,8 +321,7 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        livesText.text = "x " + playerControl.getLives().ToString();
-        scoreText.text = "x " + playerControl.getScore().ToString();
+        scoreText.text = playerControl.getScore().ToString();
         if (player.gameObject == null)
             return;
         switch(currentState)
@@ -489,7 +484,7 @@ public class GameController : MonoBehaviour {
         GridController.speed = 0;
         PickUpController.speed = 0;
         endScore.text = playerControl.getScore().ToString();
-        endScreenUI.SetActive(true);
+        StartCoroutine(endGame(2));
     }
 
     public void StartNewGame()
@@ -497,5 +492,13 @@ public class GameController : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         playerControl.resetScore();
         gameEnded = false;
+    }
+
+    // Ends the game after given seconds
+    IEnumerator endGame(int seconds)
+    {
+        for(int i = 0; i < seconds; ++i)
+            yield return new WaitForSeconds(1);
+        endScreenUI.SetActive(true);
     }
 }

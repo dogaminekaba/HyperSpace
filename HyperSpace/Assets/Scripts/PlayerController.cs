@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
+    public GameObject sheild1, sheild2, sheild3, sheild4;
     public GameObject explosionPrefab;
-    public bool firstPlay = true;
     private GameObject explosion;
     private int lives = 3;
     private int scoreTop = 0;
@@ -23,7 +24,7 @@ public class PlayerController : MonoBehaviour {
     {
         if (other.tag == "Sheild")
         {
-            ++lives;
+            addLive(lives);
             Destroy(other.gameObject);
         }
         else if(other.tag == "Alien")
@@ -38,14 +39,14 @@ public class PlayerController : MonoBehaviour {
                 if (explosion != null)
                     Destroy(explosion);
                 explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
-                --lives;
+                removeLive(lives);
             }
             else
             {
                 if (explosion != null)
                     Destroy(explosion);
                 explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
-                --lives;
+                removeLive(lives);
             }
         }
     }
@@ -55,7 +56,47 @@ public class PlayerController : MonoBehaviour {
         if (explosion != null)
             Destroy(explosion);
         explosion = (GameObject)Instantiate(explosionPrefab, transform.position, transform.rotation);
+        removeLive(lives);
+    }
+
+    private void removeLive(int sheildNum)
+    {
+        switch(sheildNum)
+        {
+            case 1:
+                sheild1.SetActive(false);
+                break;
+            case 2:
+                sheild2.SetActive(false);
+                break;
+            case 3:
+                sheild3.SetActive(false);
+                break;
+            case 4:
+                sheild4.SetActive(false);
+                break;
+        }
         --lives;
+    }
+
+    private void addLive(int sheildNum)
+    {
+        switch (sheildNum)
+        {
+            case 1:
+                sheild1.SetActive(true);
+                break;
+            case 2:
+                sheild2.SetActive(true);
+                break;
+            case 3:
+                sheild3.SetActive(true);
+                break;
+            case 4:
+                sheild4.SetActive(true);
+                break;
+        }
+        ++lives;
     }
 
     public int getLives()

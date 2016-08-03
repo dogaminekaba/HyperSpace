@@ -20,8 +20,8 @@ public class StartScreenController : MonoBehaviour {
         while (fillAmount > 0)
         {
             alienTreeImage.fillAmount = fillAmount;
-            fillAmount -= 0.001F;
-            yield return new WaitForSeconds(0.5F * Time.deltaTime);
+            fillAmount -= 0.005F;
+            yield return new WaitForSeconds(0.5F * Time.fixedDeltaTime);
             if (fillAmount <= 0)
             {
                 particles.transform.position = new Vector3(alienTreeImage.transform.position.x, alienTreeImage.transform.position.y, alienTreeImage.transform.position.z - 5);
@@ -39,6 +39,6 @@ public class StartScreenController : MonoBehaviour {
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Main Scene");
+        SceneManager.LoadScene("Gameplay Scene");
     }
 }
