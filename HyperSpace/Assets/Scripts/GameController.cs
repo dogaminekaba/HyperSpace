@@ -37,7 +37,6 @@ public class GameController : MonoBehaviour {
     public Image alienImage;
     public static bool gameEnded = false;
     public GameObject horizontalWall;
-    public GameObject horizontalUpperWall;
     public GameObject verticalWall;
     public GameObject playerShadowPrefab;
     public GameObject gridPrefab;
@@ -56,7 +55,7 @@ public class GameController : MonoBehaviour {
     private float vel = 20F;
     private Vector3 refTopCenter = new Vector3(0, 1, -17);
     private Vector3 refMidCenter = new Vector3(50, 1, -17);
-    private Vector3 refBottomCenter = new Vector3(100, 3, -17);
+    private Vector3 refBottomCenter = new Vector3(100, 1, -17);
     private Vector3 currentRef;
     private float mouseDownY;
     private float mouseUpY;
@@ -231,8 +230,8 @@ public class GameController : MonoBehaviour {
                 }
             }
             // create wall for view 3
-            spawnPosition = new Vector3(100, 3, 20);
-            Instantiate(horizontalUpperWall, spawnPosition, spawnRotation);
+            spawnPosition = new Vector3(100, 0.75F, 20);
+            Instantiate(horizontalWall, spawnPosition, spawnRotation);
             yield return new WaitForSeconds(13F / speed);
         }
     }
@@ -351,7 +350,7 @@ public class GameController : MonoBehaviour {
                 break;
             // inverse jump
             case State.STATE_DUCKING:
-                if (duckPosY > 0.8F && !ducked)
+                if (duckPosY > -4 && !ducked)
                 {
                     player.transform.position = new Vector3(player.transform.position.x, duckPosY, player.transform.position.z);
                     accelerator += 0.01F;
@@ -398,8 +397,8 @@ public class GameController : MonoBehaviour {
             {
                 if (mouseDownY > Screen.height * 2 / 3)
                 {
-                    currentRef = refTopCenter;
-                    changeView(View.VIEW_TOP);
+                    currentRef = refBottomCenter;
+                    changeView(View.VIEW_BOTTOM);
                 }
                 else if ((mouseDownY >= Screen.height * 1 / 3) && (mouseDownY <= Screen.height * 2 / 3))
                 {
@@ -408,8 +407,8 @@ public class GameController : MonoBehaviour {
                 }
                 else if (mouseDownY < Screen.height * 1 / 3)
                 {
-                    currentRef = refBottomCenter;
-                    changeView(View.VIEW_BOTTOM);
+                    currentRef = refTopCenter;
+                    changeView(View.VIEW_TOP);
                 }
                 playerControl.changeView(currentView);
             }
