@@ -47,9 +47,9 @@ Unity Engine is used to develop the game. This was my first experience with Unit
 ## Screenshots from the Game:
 
 <p>
-  <img align="left" src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/1.png" width="190"/>
-  <img align="center" src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/2.png" width="190"/>
-  <img align="left" src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/3.png" width="190"/>
-  <img align="center" src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/4.png" width="190"/>
+  <img src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/1.png" height="600"/>
+  <img src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/2.png" height="600"/>
+  <img src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/3.png" height="600"/>
+  <img src="https://github.com/dogaminekaba/HyperSpace/blob/master/HyperSpace/4.png" height="600"/>
 </p>
 
